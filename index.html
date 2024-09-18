@@ -33,15 +33,6 @@
             transform: scale(1.1);
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
         }
-        .control-buttons {
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            margin: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
     </style>
 </head>
 <body>
@@ -52,11 +43,6 @@
         <img id="scissors" class="choice" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYWC4Lh4__LPZWL9WoT8hF1OUe4serZs_6tw&s" alt="剪刀" />
     </div>
 
-    <div class="control-buttons">
-        <button id="restart">重新開始</button>
-        <button id="quit">結束遊戲</button>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const choices = ['rock', 'paper', 'scissors'];
@@ -64,17 +50,18 @@
         let firstToWin = ''; // 紀錄誰最早取得三勝
 
         // 加載音效
-        const winSound = new Audio('https://yourusername.github.io/my-game-project/my-sound-files/贏了.mp3');
-        const loseSound = new Audio('https://yourusername.github.io/my-game-project/my-sound-files/輸了.mp3');
-        const tieSound = new Audio('https://yourusername.github.io/my-game-project/my-sound-files/平手.mp3');
+        const winSound = new Audio('/mnt/data/贏了.mp3'); 
+        const loseSound = new Audio('/mnt/data/輸了.mp3'); 
+        const tieSound = new Audio('/mnt/data/平手.mp3'); 
 
+        // 確保音效成功載入
+        winSound.oncanplaythrough = () => console.log('Win sound loaded successfully!');
+        loseSound.oncanplaythrough = () => console.log('Lose sound loaded successfully!');
+        tieSound.oncanplaythrough = () => console.log('Tie sound loaded successfully!');
 
         document.getElementById('rock').addEventListener('click', () => playGame('rock'));
         document.getElementById('paper').addEventListener('click', () => playGame('paper'));
         document.getElementById('scissors').addEventListener('click', () => playGame('scissors'));
-
-        document.getElementById('restart').addEventListener('click', resetGame);
-        document.getElementById('quit').addEventListener('click', () => Swal.fire('遊戲已結束，感謝遊玩！'));
 
         function playGame(playerChoice) {
             const computerChoice = choices[Math.floor(Math.random() * choices.length)];

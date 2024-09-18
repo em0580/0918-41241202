@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剪刀石頭布遊戲</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+        }
+        .choice {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .choice:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>剪刀石頭布</h1>
+    <div class="button-container">
+        <img id="rock" class="choice" src="https://png.pngtree.com/png-vector/20220106/ourmid/pngtree-cartoon-stone-vector-material-png-image_4094436.png" alt="石頭" />
+        <img id="paper" class="choice" src="https://png.pngtree.com/png-clipart/20220107/ourmid/pngtree-grid-tablecloth-picnic-cloth-cartoon-png-material-png-image_4098966.png" alt="布" />
+        <img id="scissors" class="choice" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYWC4Lh4__LPZWL9WoT8hF1OUe4serZs_6tw&s" alt="剪刀" />
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const choices = ['rock', 'paper', 'scissors'];
+        let wins = 0, losses = 0;
+        let firstToWin = ''; // 紀錄誰最早取得三勝
+
+        // 加載音效
+        const winSound = new Audio('贏了.mp3'); 
+        const loseSound = new Audio('輸了.mp3'); 
+        const tieSound = new Audio('平手.mp3'); 
+
+        // 確保音效成功載入
+        winSound.oncanplaythrough = () => console.log('Win sound loaded successfully!');
+        loseSound.oncanplaythrough = () => console.log('Lose sound loaded successfully!');
+        tieSound.oncanplaythrough = () => console.log('Tie sound loaded successfully!');
+
+        document.getElementById('rock').addEventListener('click', () => playGame('rock'));
+        document.getElementById('paper').addEventListener('click', () => playGame('paper'));
+        document.getElementById('scissors').addEventListener('click', () => playGame('scissors'));
+
+        function playGame(playerChoice) {
+            const computerChoice = choices[Math.floor(Math.random() * choices.length)];
+            let resultMessage = '';
+            let resultColor = '';
+
+            if (playerChoice === computerChoice) {
+                resultMessage = '平手！';
+                resultColor = 'gray';
+                tieSound.play(); // 播放平手音效
+            } else if (
+                (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                (playerChoice === 'paper' && computerChoice === 'rock') ||
+                (playerChoice === 'scissors' && computerChoice === 'paper')
+            ) {
+                resultMessage = '你贏了！';
+                resultColor = 'green';
+                wins++;
+                if (wins === 3 && firstToWin === '') firstToWin = '你'; // 玩家先到達三勝
+                winSound.play(); // 播放贏的音效
+            } else {
+                resultMessage = '你輸了！';
+                resultColor = 'red';
+                losses++;
+                if (losses === 3 && firstToWin === '') firstToWin = '電腦'; // 電腦先到達三勝
+                loseSound.play(); // 播放輸的音效
+            }
+
+            Swal.fire({
+                title: `結果`,
+                text: `你選擇了 ${playerChoice}，電腦選擇了 ${computerChoice}。\n${resultMessage}`,
+                icon: resultColor === 'gray' ? 'info' : resultColor === 'green' ? 'success' : 'error',
+                confirmButtonText: '確定'
+            }).then(() => {
+                if (wins === 3 || losses === 3) {
+                    Swal.fire({
+                        title: `${firstToWin} 最早累積到三勝！`,
+                        text: `${firstToWin} 首先獲得了三次勝利！`,
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: '重新開始',
+                        cancelButtonText: '結束遊戲'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            resetGame();
+                        } else {
+                            Swal.fire('感謝遊玩！');
+                        }
+                    });
+                }
+            });
+        }
+
+        function resetGame() {
+            wins = 0;
+            losses = 0;
+            firstToWin = ''; // 重置三勝紀錄
+        }
+    </script>
+</body>
+</html>
